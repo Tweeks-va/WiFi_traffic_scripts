@@ -45,8 +45,7 @@ sleep 1
 $WEBBIN http://$SERVER$PAGE3
 echo "=========PAGE4================"
 sleep 1
-#$WBBIN http://$SERVER$PAGE4
-$WBBIN http://192.168.140.1/advanced-wireless.asp
+$WEBBIN http://$SERVER$PAGE4
 echo "=========PAGE5================"
 sleep 1
 $WEBBIN http://$SERVER$PAGE5 | strings
