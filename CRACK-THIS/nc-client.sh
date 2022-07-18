@@ -1,8 +1,28 @@
 #!/bin/bash
 # nc-client.sh  
 ## By tweeks@VirginiaCyberRange.org, 2022-07-08
-## To be run on the RPi client or classroom laptop and pointed at the server to generate some 
+## To be run on the RPi client or classroom laptop and pointed at the Access Point to generate some 
 ## light http and raw netcat traffic.
+
+
+
+## ABORT if already running
+script_name=$(basename -- "$0")
+if pidof -x "$script_name" -o $$ >/dev/null;then
+	echo "!! already running.. kicking out."
+	exit 1
+else
+	echo "not running yet.. starting up net-cleint sessions..."
+fi
+
+## ABORT if not connected to CRACK-ME AP w/static IP = 192.168.140.3
+if [[ $(ip addr show |grep 192.168.140.3 >/dev/null 2>&1; echo -n $?) == "0" ]]; then
+	echo "on correct wifi.. running web client traffic generation.."
+else
+	echo "!! not on correct wifi.. aborting..."
+	exit 1
+fi
+
 
 export SERVER=192.168.140.1
 
@@ -18,12 +38,12 @@ export PAGE4=/advanced-wireless.asp
 export PAGE5='/openlinksys.png '
 ## Router username/password (to harvest a http-basic auth session)
 export HTTPUSER="admin"
-export HTTPPASS="password"
+export HTTPPASS="n3tg34rp455w0rd"
 export USERPASS=" -auth=$HTTPUSER:$HTTPPASS "
 #export USERPASS=" "
 
-#export WEBBIN="lynx -dump "
-export WEBBIN="wget --http-user=$HTTPUSER --http-password=$HTTPPASS --no-check-certificate -q -O - "
+export WEBBIN="lynx -dump $USERPASS "
+#export WEBBIN="wget --http-user=$HTTPUSER --http-password=$HTTPPASS --no-check-certificate -q -O - "
 
 
 ## Loop this web traffic forever...
@@ -54,4 +74,5 @@ sleep 1
 $WEBBIN http://$SERVER/
 sleep 1
 done
+
 
