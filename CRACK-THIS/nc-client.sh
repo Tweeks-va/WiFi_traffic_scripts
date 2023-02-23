@@ -1,6 +1,6 @@
 #!/bin/bash
 # nc-client.sh  
-## By tweeks@VirginiaCyberRange.org, 2022-07-08
+## By tweeks@VirginiaCyberRange.org, 2023-02-23
 ## To be run on the RPi client or classroom laptop and pointed at the Access Point to generate some 
 ## light http and raw netcat traffic.
 
@@ -38,22 +38,38 @@ export PAGE4=/advanced-wireless.asp
 export PAGE5='/openlinksys.png '
 ## Router username/password (to harvest a http-basic auth session)
 export HTTPUSER="admin"
-export HTTPPASS="n3tg34rp455w0rd"
+export HTTPPASS="not-the-real-password"
 export USERPASS=" -auth=$HTTPUSER:$HTTPPASS "
 #export USERPASS=" "
 
-export WEBBIN="lynx -dump $USERPASS "
-#export WEBBIN="wget --http-user=$HTTPUSER --http-password=$HTTPPASS --no-check-certificate -q -O - "
+##export WEBBIN="lynx -dump $USERPASS "
+## TWW - Disabling password
+##export WEBBIN="lynx -dump "
+export WEBBIN="wget --http-user=$HTTPUSER --http-password=$HTTPPASS --no-check-certificate -q -O - "
 
 
 ## Loop this web traffic forever...
 while [ 1 ]; do 
+## If not pinging.. don't continue launching web client sessions
+while [[ $(ping -c 1 $SERVER >/dev/null 2>&1; echo $?) != "0" ]]; do
+	echo "** Network down. Monitoring..."
+	sleep 2
+done
+
+echo "===========SERVER-PING-TEST============="
+echo "** Host is up.. sending http requests."
+sleep 1
+
+
+
 ## Not using (OpenWRT nc can't do local binding)
 #echo "============================================================"
 #echo "##################### SENDING 31337 FLAG ###################"
 #(echo -e "=====================================================\n\nH3ll0 th3r3 N3tg34r r0ut3r!   \n\n" ; echo "The flag is $FLAG"; echo -e "\n\n\n" ) | nc $SERVER $PORT
 #echo "============================================================"
 #sleep 1
+
+
 
 ## Let's just generate some traffic (with an http auth-basic user:pass in it)
 #WEBBIN $USERPASS -dump http://$SERVER$PAGE1
